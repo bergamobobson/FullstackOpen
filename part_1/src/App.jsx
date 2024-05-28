@@ -1,40 +1,61 @@
 /*
- Unfortunately, the entire application is in the same component.
- Refactor the code so that it consists of three new components: Header, Content, and Total. 
- All data still resides in the App component, which passes the necessary data to each component using props. 
- Header takes care of rendering the name of the course, 
- Content renders the parts and their number of exercises 
- and Total renders the total number of exercises.
+ 
+Refactor the Content component so that it does not render any names of parts or their number of exercises by itself. 
+Instead, it only renders three Part components of which each renders the name and number of exercises of one part.
 */
 
 const Header = (props) => {
-  return <h1>{props.course}</h1>
-}
+  return <h1>{props.course}</h1>;
+};
+
+const Part = (props) => {
+  return (
+    <p>
+      {props.part} {props.exercise}
+    </p>
+  );
+};
 
 const Content = (props) => {
-  return <p>{props.part} {props.exercise}</p>
-}
+  return (
+    <>
+      <Part part={props.content[0].part} exercise={props.content[0].exercise} />
+      <Part part={props.content[1].part} exercise={props.content[1].exercise} />
+      <Part part={props.content[2].part} exercise={props.content[2].exercise} />
+    </>
+  );
+};
 
 const Total = (props) => {
   return <p>Number of exercises {props.total}</p>;
-}
+};
 
 const App = () => {
   const course = "Half Stack application development";
-  const part1 = "Fundamentals of React";
-  const exercises1 = 10;
-  const part2 = "Using props to pass data";
-  const exercises2 = 7;
-  const part3 = "State of a component";
-  const exercises3 = 14;
+  const content = [
+    {
+      part: "Fundamentals of React",
+      exercise: 10,
+    },
+
+    {
+      part: "Using props to pass data",
+      exercise: 7,
+    },
+
+    {
+      part: "State of a component",
+      exercise: 14,
+    },
+  ];
+
+  const total = content.reduce((acc, curr) => acc + curr.exercise, 0)
 
   return (
     <div>
       <Header course={course} />
-      <Content part={part1} exercise={exercises1} />
-      <Content part={part2} exercise={exercises2} />
-      <Content part={part3} exercise={exercises3} />
-      <Total total={exercises1 + exercises2 + exercises3}/>
+      <Content content={content} />
+      <Total total={total} />
     </div>
   );
 };
