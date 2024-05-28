@@ -1,7 +1,7 @@
 /*
  
-Refactor the Content component so that it does not render any names of parts or their number of exercises by itself. 
-Instead, it only renders three Part components of which each renders the name and number of exercises of one part.
+
+Let's move forward to using objects in our application. Modify the variable definitions of the App component as follows and also refactor the application so that it still works:
 */
 
 const Header = (props) => {
@@ -19,43 +19,42 @@ const Part = (props) => {
 const Content = (props) => {
   return (
     <>
-      <Part part={props.content[0].part} exercise={props.content[0].exercise} />
-      <Part part={props.content[1].part} exercise={props.content[1].exercise} />
-      <Part part={props.content[2].part} exercise={props.content[2].exercise} />
+      <Part part={props.part1.name} exercise={props.part1.exercises} />
+      <Part part={props.part2.name} exercise={props.part2.exercises} />
+      <Part part={props.part3.name} exercise={props.part3.exercises} />
     </>
   );
 };
 
 const Total = (props) => {
-  return <p>Number of exercises {props.total}</p>;
+  return (
+    <p>
+      Number of exercises{" "}
+      {props.part1.exercises + props.part2.exercises + props.part3.exercises}
+    </p>
+  );
 };
 
 const App = () => {
   const course = "Half Stack application development";
-  const content = [
-    {
-      part: "Fundamentals of React",
-      exercise: 10,
-    },
-
-    {
-      part: "Using props to pass data",
-      exercise: 7,
-    },
-
-    {
-      part: "State of a component",
-      exercise: 14,
-    },
-  ];
-
-  const total = content.reduce((acc, curr) => acc + curr.exercise, 0)
+  const part1 = {
+    name: "Fundamentals of React",
+    exercises: 10,
+  };
+  const part2 = {
+    name: "Using props to pass data",
+    exercises: 7,
+  };
+  const part3 = {
+    name: "State of a component",
+    exercises: 14,
+  };
 
   return (
     <div>
       <Header course={course} />
-      <Content content={content} />
-      <Total total={total} />
+      <Content part1={part1} part2={part2} part3={part3} />
+      <Total part1={part1} part2={part2} part3={part3} />
     </div>
   );
 };
