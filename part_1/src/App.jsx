@@ -1,80 +1,37 @@
-/*
- 
-Let's take the changes one step further. Change the course and its parts into a single JavaScript object. 
-*/
+import { useState } from "react";
 
-const Header = (props) => {
-  return <h1>{props.course.name}</h1>;
-};
+const Header = ({ text }) => <h1>{text}</h1>;
 
-const Part = (props) => {
-  return (
-    <p>
-      {props.part} {props.exercise}
-    </p>
-  );
-};
+const Button = ({ handleClick, text }) => (
+  <button onClick={handleClick}>{text}</button>
+);
 
-const Content = (props) => {
-  return (
-    <>
-      <Part
-        part={props.course.parts[0].name}
-        exercise={props.course.parts[0].exercises}
-      />
+const Footer = ({ good, neutral, bad }) => (
+  <>
+    <h3>Statistics</h3>
 
-      <Part
-        part={props.course.parts[1].name}
-        exercise={props.course.parts[1].exercises}
-      />
-
-      <Part
-        part={props.course.parts[2].name}
-        exercise={props.course.parts[2].exercises}
-      />
-    </>
-  );
-};
-
-const Total = (props) => {
-  return (
-    <p>
-      Number of exercises{" "}
-      {props.course.parts[0].exercises +
-        props.course.parts[1].exercises +
-        props.course.parts[2].exercises}
-    </p>
-  );
-};
+    <p style={{ margin: 0 }}>good {good}</p>
+    <p style={{ margin: 0 }}>neutral {neutral}</p>
+    <p style={{ margin: 0 }}>bad {bad}</p>
+  </>
+);
 
 const App = () => {
-  const course = {
-    name: "Half Stack application development",
-    parts: [
-      {
-        name: "Fundamentals of React",
-        exercises: 10,
-      },
-      {
-        name: "Using props to pass data",
-        exercises: 7,
-      },
-      {
-        name: "State of a component",
-        exercises: 14,
-      },
-    ],
-  };
+  const [good, setGood] = useState(0);
+  const [neutral, setNeutral] = useState(0);
+  const [bad, setBad] = useState(0);
 
+  const handleGood = () => setGood(good + 1);
+  const handleNeutral = () => setNeutral(neutral + 1);
+  const handleBad = () => setBad(bad + 1);
   return (
     <div>
-      <Header course={course} />
-
-      <Content course={course} />
-
-      <Total course={course} />
+      <Header text="Give Feedback" />
+      <Button handleClick={handleGood} text="GOOD" />
+      <Button handleClick={handleNeutral} text="NEUTRAL" />
+      <Button handleClick={handleBad} text="BAD" />
+      <Footer good={good} neutral={neutral} bad={bad} />
     </div>
   );
 };
-
 export default App;
