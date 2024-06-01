@@ -13,20 +13,29 @@ const App = () => {
   ];
 
   const [selected, setSelected] = useState(0);
+  const initializer = anecdotes.reduce((init, _, index) => {
+    init[index] = 0;
+    return init;
+  }, {});
+  const [vote, setVote] = useState(initializer);
 
-  console.log("selected", selected);
+  const handleSelected = () => {
+    const next = Math.floor(Math.random() * anecdotes.length);
+    setSelected(next);
+  };
+
+  const handleVotes = () => {
+    const prevVote = { ...vote };
+    prevVote[selected] += 1;
+    setVote(prevVote);
+  };
 
   return (
     <>
       <div>{anecdotes[selected]}</div>
-      <button
-        onClick={() =>
-          setSelected(Math.floor(Math.random() * anecdotes.length))
-        }
-      >
-        {" "}
-        next anecdote
-      </button>
+      <div>has {vote[selected]} votes</div>
+      <button onClick={handleVotes}>Votes</button>
+      <button onClick={handleSelected}> next anecdote</button>
     </>
   );
 };
