@@ -6,15 +6,22 @@ const Button = ({ handleClick, text }) => (
   <button onClick={handleClick}>{text}</button>
 );
 
-const Footer = ({ good, neutral, bad }) => (
-  <>
-    <h3>Statistics</h3>
-
-    <p style={{ margin: 0 }}>good {good}</p>
-    <p style={{ margin: 0 }}>neutral {neutral}</p>
-    <p style={{ margin: 0 }}>bad {bad}</p>
-  </>
-);
+const Footer = ({ good, neutral, bad }) => {
+  const average = (good + neutral + bad) / 3.0;
+  const total = good + neutral + bad;
+  const positive = (good / total) * 100;
+  return (
+    <>
+      <h3>Statistics</h3>
+      <p style={{ margin: 0 }}>good {good}</p>
+      <p style={{ margin: 0 }}>neutral {neutral}</p>
+      <p style={{ margin: 0 }}>bad {bad}</p>
+      <p style={{ margin: 0 }}>average {average}</p>
+      <p style={{ margin: 0 }}>total {total}</p>
+      <p style={{ margin: 0 }}>positive {positive} %</p>
+    </>
+  );
+};
 
 const App = () => {
   const [good, setGood] = useState(0);
