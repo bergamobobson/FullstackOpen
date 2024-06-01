@@ -1,5 +1,29 @@
 import { useState } from "react";
 
+const Anecdote = ({ anecdote, vote }) => {
+  return (
+    <>
+      <p style={{ margin: 0 }}>{anecdote}</p>
+      <p style={{ margin: 0 }}>has {vote} votes</p>
+    </>
+  );
+};
+
+const Statistic = ({ total, anecdote, vote }) => {
+  return (
+    <>
+      {total === 0 ? (
+        <h4>No anecdote has been vote yet</h4>
+      ) : (
+        <>
+          <h1>Anecdote with most votes</h1>
+          <Anecdote anecdote={anecdote} vote={vote} />
+        </>
+      )}
+    </>
+  );
+};
+
 const App = () => {
   const anecdotes = [
     "If it hurts, do it more often.",
@@ -25,17 +49,30 @@ const App = () => {
   };
 
   const handleVotes = () => {
-    const prevVote = { ...vote };
+    const prevVote = { ...vote }; //because state variable should be immutable
     prevVote[selected] += 1;
     setVote(prevVote);
   };
+  const voteMap = new Map(Object.entries(vote));
+  const maxIndex = Array.from(voteMap.keys()).reduce((maxKey, key) => {
+    return voteMap.get(key) > voteMap.get(maxKey) ? key : maxKey;
+  }, Array.from(voteMap.keys())[0]);
+
+  const totalVote = Array.from(voteMap.values()).reduce((acc, curr) => {
+    return acc + curr;
+  }, 0);
 
   return (
     <>
-      <div>{anecdotes[selected]}</div>
-      <div>has {vote[selected]} votes</div>
+      <h1>Anecdoted of the Days</h1>
+      <Anecdote anecdote={anecdotes[selected]} vote={vote[selected]} />
       <button onClick={handleVotes}>Votes</button>
       <button onClick={handleSelected}> next anecdote</button>
+      <Statistic
+        total={totalVote}
+        anecdote={anecdotes[maxIndex]}
+        vote={vote[maxIndex]}
+      />
     </>
   );
 };
