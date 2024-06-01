@@ -31,13 +31,20 @@ const App = () => {
   const handleGood = () => setGood(good + 1);
   const handleNeutral = () => setNeutral(neutral + 1);
   const handleBad = () => setBad(bad + 1);
+
+  const footer =
+    good == 0 && neutral == 0 && bad == 0 ? (
+      <p>No feedbacks yet</p>
+    ) : (
+      <Statistics good={good} neutral={neutral} bad={bad} />
+    );
   return (
     <div>
-      <Header text="Give Feedback" />
+      <Header text="Give Feedbacks" />
       <Button handleClick={handleGood} text="GOOD" />
       <Button handleClick={handleNeutral} text="NEUTRAL" />
       <Button handleClick={handleBad} text="BAD" />
-      <Statistics good={good} neutral={neutral} bad={bad} />
+      {footer}
     </div>
   );
 };
