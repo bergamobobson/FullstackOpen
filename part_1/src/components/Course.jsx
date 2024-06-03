@@ -1,5 +1,5 @@
-const Header = (props) => {
-  return <h1>{props.course.name}</h1>;
+const Header = ({ course }) => {
+  return <h1>{course.name}</h1>;
 };
 
 const Part = ({ part, exercise }) => {
@@ -33,14 +33,23 @@ const Total = ({ course }) => {
   );
 };
 
-const Course = ({ course }) => {
+const CourseContentStat = ({ course }) => {
+  return (
+    <>
+      <Header course={course} />
+      <Content course={course} />
+      <Total course={course} />
+    </>
+  );
+};
+
+const Course = ({ courses }) => {
+  console.log("courses", courses);
   return (
     <div>
-      <Header course={course} />
-
-      <Content course={course} />
-
-      {<Total course={course} />}
+      {courses.map((course) => (
+        <CourseContentStat key={course.id} course={course} />
+      ))}
     </div>
   );
 };
