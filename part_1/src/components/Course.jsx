@@ -44,7 +44,6 @@ const CourseContentStat = ({ course }) => {
 };
 
 const Course = ({ courses }) => {
-  console.log("courses", courses);
   return (
     <div>
       {courses.map((course) => (
