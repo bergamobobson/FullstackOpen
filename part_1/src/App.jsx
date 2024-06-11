@@ -89,19 +89,24 @@ function areTheseObjectsEqual(first, second) {
 
 const App = () => {
   const [persons, setPersons] = useState([
-    { name: "Arto Hellas", number: 12345 },
+    { name: "Arto Hellas", number: "040-123456", id: 1 },
+    { name: "Ada Lovelace", number: "39-44-5323523", id: 2 },
+    { name: "Dan Abramov", number: "12-43-234345", id: 3 },
+    { name: "Mary Poppendieck", number: "39-23-6423122", id: 4 },
   ]);
   const [newName, setNewName] = useState("");
   const [newNumber, setNewNumber] = useState("");
+  const [filter, setFilter] = useState("");
 
   const handleSubmit = (event) => {
     event.preventDefault();
     const newPerson = { name: newName, number: newNumber };
-    const alreadyExist = persons.some((person) =>
-      areTheseObjectsEqual(person, newPerson)
+    const alreadyExist = persons.some(
+      (person) => newPerson.name === person.name
     );
-    if (alreadyExist) alert(`${newName} is already added to phonebook`);
-    else {
+    if (alreadyExist) {
+      alert(`${newName} is already added to phonebook`);
+    } else {
       setPersons(persons.concat(newPerson));
       setNewName("");
       setNewNumber("");
@@ -116,13 +121,30 @@ const App = () => {
     setNewNumber(event.target.value);
   };
 
+  const handleChangeFilter = (event) => {
+    setFilter(event.target.value);
+  };
+
+  const filteredPersons =
+    filter.trim().length === 0
+      ? persons
+      : persons.filter((p) =>
+          p.name.toLowerCase().includes(filter.toLowerCase().trim())
+        );
+
   return (
     <div>
       <h2>Phonebook</h2>
+      <div>
+        filter show with: <input value={filter} onChange={handleChangeFilter} />
+      </div>
+      <br />
+      <h2>Add new phone</h2>
       <form onSubmit={handleSubmit}>
         <div>
           name: <input value={newName} onChange={handleChangeName} />
-          <br />
+        </div>
+        <div>
           number: <input value={newNumber} onChange={handleChangeNumber} />
         </div>
         <div>
@@ -130,11 +152,9 @@ const App = () => {
         </div>
       </form>
       <h2>Numbers</h2>
-      <ul style={{ listStyleType: "none" }}>
-        {persons.map((p) => (
-          <Person key={p.name} person={p} />
-        ))}
-      </ul>
+      {filteredPersons.map((p) => (
+        <Person key={p.name} person={p} />
+      ))}
     </div>
   );
 };

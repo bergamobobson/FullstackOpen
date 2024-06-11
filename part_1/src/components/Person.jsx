@@ -1,6 +1,6 @@
 const Person = ({ person }) => {
   return (
-    <li>
+    <li style={{ listStyleType: "none" }}>
       {person.name} {person.number}
     </li>
   );
