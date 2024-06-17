@@ -3,6 +3,7 @@ import FilterPhone from "./components/FilterPhone";
 import AddPhone from "./components/AddPhone";
 import ShowPhone from "./components/ShowPhone";
 import phoneService from "./services/phones";
+import phones from "./services/phones";
 
 const App = () => {
   const [persons, setPersons] = useState([]);
@@ -31,6 +32,14 @@ const App = () => {
         setNewNumber("");
       });
     }
+  };
+
+  const deletePerson = (id) => {
+    phoneService.cancel(id).then((data) => {
+      confirm("are you sure you want to delete ", data.name, "?")
+        ? setPersons(persons.filter((p) => p.id !== data.id))
+        : setPersons(persons);
+    });
   };
 
   const handleChangeName = (event) => {
@@ -63,7 +72,7 @@ const App = () => {
         handleChangeNumber={handleChangeNumber}
       />
 
-      <ShowPhone persons={filteredPersons} />
+      <ShowPhone persons={filteredPersons} handleDelete={deletePerson} />
     </div>
   );
 };

@@ -1,8 +1,13 @@
-const Person = ({ person }) => {
+const Person = ({ person, handleDelete}) => {
   return (
-    <li style={{ listStyleType: "none" }}>
-      {person.name} {person.number}
-    </li>
+    <>
+      <li style={{ listStyleType: "none" }}>
+        {person.name} {person.number}
+        <button type="button" onClick={handleDelete}>
+          delete
+        </button>
+      </li>
+    </>
   );
 };
 
