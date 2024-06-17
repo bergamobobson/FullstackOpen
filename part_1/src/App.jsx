@@ -26,17 +26,25 @@ const App = () => {
       (person) => newPerson.name === person.name
     );
     if (alreadyExist) {
-      alert(`${newName} is already added to phonebook`);
+      const test = confirm(
+        `${newName} is already added to phonebook. Change number?`
+      );
+      const person = persons.find((p) => p.name === newPerson.name);
+      test
+        ? phoneService
+            .update(person.id, newPerson)
+            .then((data) =>
+              setPersons(persons.map((p) => (p.id !== data.id ? p : data)))
+            )
+        : newPerson;
     } else {
       phoneService.create(newPerson).then((data) => {
         setPersons(persons.concat(data));
-        setNewName("");
-        setNewNumber("");
       });
     }
+    setNewName("");
+    setNewNumber("");
   };
-
-  console.log("persons", persons);
 
   const deletePerson = (id) => {
     phoneService.cancel(id).then((data) => {
