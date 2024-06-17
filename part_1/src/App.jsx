@@ -20,19 +20,23 @@ const App = () => {
   const addPerson = (event) => {
     event.preventDefault();
     const newPerson = { name: newName, number: newNumber };
+    console.log("newName", newName);
+    console.log("newNumber", newNumber);
     const alreadyExist = persons.some(
       (person) => newPerson.name === person.name
     );
     if (alreadyExist) {
       alert(`${newName} is already added to phonebook`);
     } else {
-      phoneService.create().then((data) => {
+      phoneService.create(newPerson).then((data) => {
         setPersons(persons.concat(data));
         setNewName("");
         setNewNumber("");
       });
     }
   };
+
+  console.log("persons", persons);
 
   const deletePerson = (id) => {
     phoneService.cancel(id).then((data) => {
