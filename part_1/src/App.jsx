@@ -3,13 +3,15 @@ import FilterPhone from "./components/FilterPhone";
 import AddPhone from "./components/AddPhone";
 import ShowPhone from "./components/ShowPhone";
 import phoneService from "./services/phones";
-import phones from "./services/phones";
+import Notification from "./components/Notification";
 
 const App = () => {
   const [persons, setPersons] = useState([]);
   const [newName, setNewName] = useState("");
   const [newNumber, setNewNumber] = useState("");
   const [filter, setFilter] = useState("");
+
+  const [notification, setNotification] = useState(null);
 
   useEffect(() => {
     phoneService.getAll().then((data) => {
@@ -31,15 +33,17 @@ const App = () => {
       );
       const person = persons.find((p) => p.name === newPerson.name);
       test
-        ? phoneService
-            .update(person.id, newPerson)
-            .then((data) =>
-              setPersons(persons.map((p) => (p.id !== data.id ? p : data)))
-            )
+        ? phoneService.update(person.id, newPerson).then((data) => {
+            setPersons(persons.map((p) => (p.id !== data.id ? p : data)));
+            //setNotification(`Updated ${newName}`);
+            //setTimeout(() => setNotification(null), 5000);
+          })
         : newPerson;
     } else {
       phoneService.create(newPerson).then((data) => {
         setPersons(persons.concat(data));
+        //setNotification(`Updated ${newName}`);
+        //setTimeout(() => setNotification(null), 5000);
       });
     }
     setNewName("");
@@ -75,6 +79,8 @@ const App = () => {
 
   return (
     <div>
+      <h2>Phonebook</h2>
+      <Notification message={notification} />
       <FilterPhone filter={filter} handleChangeFilter={handleChangeFilter} />
       <AddPhone
         addPerson={addPerson}
