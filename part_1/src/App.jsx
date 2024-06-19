@@ -1,97 +1,96 @@
 import { useEffect, useState } from "react";
-import FilterPhone from "./components/FilterPhone";
-import AddPhone from "./components/AddPhone";
-import ShowPhone from "./components/ShowPhone";
-import phoneService from "./services/phones";
-import Notification from "./components/Notification";
+import countryService from "./services/countries";
 
 const App = () => {
-  const [persons, setPersons] = useState([]);
-  const [newName, setNewName] = useState("");
-  const [newNumber, setNewNumber] = useState("");
+  const [countries, setCountries] = useState([]);
   const [filter, setFilter] = useState("");
 
-  const [notification, setNotification] = useState(null);
-
+  //Data loading
   useEffect(() => {
-    phoneService.getAll().then((data) => {
-      setPersons(data);
-    });
+    countryService
+      .getAll()
+      .then((data) => {
+        setCountries(data);
+      })
+      .catch((error) => console.error("Error fetching data:", error));
   }, []);
 
-  const addPerson = (event) => {
-    event.preventDefault();
-    const newPerson = { name: newName, number: newNumber };
-    console.log("newName", newName);
-    console.log("newNumber", newNumber);
-    const alreadyExist = persons.some(
-      (person) => newPerson.name === person.name
+  //FILTER DATA
+  const filteredCountries = countries.filter((country) => {
+    return country.name.common
+      .toLowerCase()
+      .includes(filter.trim().toLowerCase());
+  });
+
+  // Function to render the list of filtered countries
+  const multipleShow = () => {
+    return (
+      <ul>
+        {filteredCountries.map((c, index) => (
+          <li key={index}>
+            {c.name.common} {c.flag}
+          </li>
+        ))}
+      </ul>
     );
-    if (alreadyExist) {
-      const test = confirm(
-        `${newName} is already added to phonebook. Change number?`
-      );
-      const person = persons.find((p) => p.name === newPerson.name);
-      test
-        ? phoneService.update(person.id, newPerson).then((data) => {
-            setPersons(persons.map((p) => (p.id !== data.id ? p : data)));
-            //setNotification(`Updated ${newName}`);
-            //setTimeout(() => setNotification(null), 5000);
-          })
-        : newPerson;
+  };
+
+  const singleShow = () => {
+    const country = filteredCountries[0];
+    const languages = Object.values(country.languages);
+
+    // Define the style for the flag
+    const flagStyle = {
+      width: "300px",
+      height: "auto",
+    };
+
+    return (
+      <>
+        <h1>{country.name.common}</h1>
+        <br />
+        <p style={{ margin: 0 }}>capital {country.capital[0]}</p>
+        <p style={{ marginTop: 1 }}>area {country.area}</p>
+        <p>Languages</p>
+        <ul>
+          {languages.map((language, index) => (
+            <li key={index}>{language}</li>
+          ))}
+        </ul>
+        <img
+          src={country.flags.png}
+          alt={country.flags.alt}
+          style={flagStyle}
+        />
+      </>
+    );
+  };
+
+  // Function to handle different cases for rendering filtered countries
+  const renderFilteredCountries = () => {
+    if (filter.length === 0) {
+      return multipleShow();
+    } else if (filteredCountries.length === 0) {
+      return <p>No matches found</p>;
+    } else if (filteredCountries.length === 1) {
+      return singleShow();
+    } else if (filteredCountries.length > 10) {
+      return <p>Too many matches, specify another filter</p>;
     } else {
-      phoneService.create(newPerson).then((data) => {
-        setPersons(persons.concat(data));
-        //setNotification(`Updated ${newName}`);
-        //setTimeout(() => setNotification(null), 5000);
-      });
+      return multipleShow();
     }
-    setNewName("");
-    setNewNumber("");
   };
-
-  const deletePerson = (id) => {
-    phoneService.cancel(id).then((data) => {
-      confirm("are you sure you want to delete ", data.name, "?")
-        ? setPersons(persons.filter((p) => p.id !== data.id))
-        : setPersons(persons);
-    });
-  };
-
-  const handleChangeName = (event) => {
-    setNewName(event.target.value);
-  };
-
-  const handleChangeNumber = (event) => {
-    setNewNumber(event.target.value);
-  };
-
-  const handleChangeFilter = (event) => {
-    setFilter(event.target.value);
-  };
-
-  const filteredPersons =
-    filter.trim().length === 0
-      ? persons
-      : persons.filter((p) =>
-          p.name.toLowerCase().includes(filter.toLowerCase().trim())
-        );
 
   return (
-    <div>
-      <h2>Phonebook</h2>
-      <Notification message={notification} />
-      <FilterPhone filter={filter} handleChangeFilter={handleChangeFilter} />
-      <AddPhone
-        addPerson={addPerson}
-        newName={newName}
-        newNumber={newNumber}
-        handleChangeName={handleChangeName}
-        handleChangeNumber={handleChangeNumber}
+    <>
+      <h1>Hello Countries</h1>
+      find countries{" "}
+      <input
+        value={filter}
+        onChange={(event) => setFilter(event.target.value)}
       />
-
-      <ShowPhone persons={filteredPersons} handleDelete={deletePerson} />
-    </div>
+      {renderFilteredCountries()}
+    </>
   );
 };
 
