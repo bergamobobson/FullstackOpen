@@ -1,11 +1,52 @@
 import { useEffect, useState } from "react";
 import countryService from "./services/countries";
 
+// Function to render the list of filtered countries
+const MultipleShow = ({ all, filteredCountries, handleClick }) => {
+  const listItems = filteredCountries.map((c, index) => (
+    <li key={index}>
+      {c.name.common} {c.flag}
+      {!all && (
+        <input type="button" value="show" onClick={() => handleClick(c)} />
+      )}
+    </li>
+  ));
+
+  return <ul>{listItems}</ul>;
+};
+
+// Function to render details of a single country
+const SingleShow = ({ country }) => {
+  const languages = Object.values(country.languages);
+
+  const flagStyle = {
+    width: "300px",
+    height: "auto",
+  };
+
+  return (
+    <>
+      <h1>{country.name.common}</h1>
+      <br />
+      <p style={{ margin: 0 }}>capital {country.capital[0]}</p>
+      <p style={{ marginTop: 1 }}>area {country.area}</p>
+      <p>Languages</p>
+      <ul>
+        {languages.map((language, index) => (
+          <li key={index}>{language}</li>
+        ))}
+      </ul>
+      <img src={country.flags.png} alt={country.flags.alt} style={flagStyle} />
+    </>
+  );
+};
+
 const App = () => {
   const [countries, setCountries] = useState([]);
   const [filter, setFilter] = useState("");
+  const [selectedCountry, setSelectedCountry] = useState("");
 
-  //Data loading
+  // Data loading
   useEffect(() => {
     countryService
       .getAll()
@@ -15,81 +56,60 @@ const App = () => {
       .catch((error) => console.error("Error fetching data:", error));
   }, []);
 
-  //FILTER DATA
-  const filteredCountries = countries.filter((country) => {
-    return country.name.common
-      .toLowerCase()
-      .includes(filter.trim().toLowerCase());
-  });
+  // Filter data based on the filter state
+  const filteredCountries = countries.filter((country) =>
+    country.name.common.toLowerCase().includes(filter.trim().toLowerCase())
+  );
 
-  // Function to render the list of filtered countries
-  const multipleShow = () => {
-    return (
-      <ul>
-        {filteredCountries.map((c, index) => (
-          <li key={index}>
-            {c.name.common} {c.flag}
-          </li>
-        ))}
-      </ul>
-    );
+  // Handle country click
+  const handleClick = (country) => {
+    setSelectedCountry(country);
+    setFilter("");
   };
 
-  const singleShow = () => {
-    const country = filteredCountries[0];
-    const languages = Object.values(country.languages);
-
-    // Define the style for the flag
-    const flagStyle = {
-      width: "300px",
-      height: "auto",
-    };
-
-    return (
-      <>
-        <h1>{country.name.common}</h1>
-        <br />
-        <p style={{ margin: 0 }}>capital {country.capital[0]}</p>
-        <p style={{ marginTop: 1 }}>area {country.area}</p>
-        <p>Languages</p>
-        <ul>
-          {languages.map((language, index) => (
-            <li key={index}>{language}</li>
-          ))}
-        </ul>
-        <img
-          src={country.flags.png}
-          alt={country.flags.alt}
-          style={flagStyle}
-        />
-      </>
-    );
+  // Handle filter change
+  const handleFilterChange = (event) => {
+    setFilter(event.target.value);
+    setSelectedCountry("");
   };
 
   // Function to handle different cases for rendering filtered countries
   const renderFilteredCountries = () => {
     if (filter.length === 0) {
-      return multipleShow();
+      return (
+        <MultipleShow
+          all={true}
+          filteredCountries={filteredCountries}
+          handleClick={handleClick}
+        />
+      );
     } else if (filteredCountries.length === 0) {
       return <p>No matches found</p>;
     } else if (filteredCountries.length === 1) {
-      return singleShow();
+      return (
+        <SingleShow country={filteredCountries[0]} handleBack={handleBack} />
+      );
     } else if (filteredCountries.length > 10) {
       return <p>Too many matches, specify another filter</p>;
     } else {
-      return multipleShow();
+      return (
+        <MultipleShow
+          all={false}
+          filteredCountries={filteredCountries}
+          handleClick={handleClick}
+        />
+      );
     }
   };
 
   return (
     <>
-      <h1>Hello Countries</h1>
-      find countries{" "}
-      <input
-        value={filter}
-        onChange={(event) => setFilter(event.target.value)}
-      />
-      {renderFilteredCountries()}
+      find countries <input value={filter} onChange={handleFilterChange} />
+      {selectedCountry ? (
+        <SingleShow country={selectedCountry} />
+      ) : (
+        renderFilteredCountries()
+      )}
     </>
   );
 };
